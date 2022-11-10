@@ -4,39 +4,40 @@
 class PokemonsController < ApplicationController
   before_action :set_pokemon, only: %i[show destroy]
   def index
-    @pokemons = Pokemon.all
-
-    render json: @pokemons, except: %i[created_at updated_at], include: %i[types stats]
+    pokemons = Pokemon.all
+    render json: pokemons, except: %i[created_at updated_at], include: %i[types stats]
   end
 
   def show
-    if !@pokemon
-      create_pokemon(params[:id])
-    elsif @pokemon.name != params[:id]
-      create_pokemon(params[:id])
-    end
+    create_pokemon(params[:id]) unless @pokemon
+    create_pokemon(params[:id]) unless @pokemon.name == params[:id]
     render json: @pokemon, except: %i[created_at updated_at], include: %i[types stats]
   end
 
   def destroy
-    @pokemon.destroy
+    if @pokemon.destroy
+      render @pokemon, status: :ok
+    else
+      render @pokemon.errors, status: :unprocessable_entity
+    end
   end
 
   private
 
   def create_pokemon(name)
-    @pokemon = PokemonNetworkRequest.new(name).get_pokemon_by_name
-    @pokemon = Pokemon.create(name: @pokemon[:name],
-                              base_experience: @pokemon[:base_experience],
-                              weight: @pokemon[:weight], stats_attributes: @pokemon[:stats],
-                              types_attributes: @pokemon[:types])
+    pokemon_by_name = PokemonNetworkRequest.new(name).fetch_pokemon_by_name
+    @pokemon = Pokemon.create(pokemon_params(pokemon_by_name))
   end
 
   def set_pokemon
     @pokemon = Pokemon.find_by(name: params[:id])
   end
 
-  def pokemon_params
-    params.require(:pokemon).permit(:name, :base_experience, :stats, :types, :weight)
+  def pokemon_params(pokemon_by_name)
+    {
+      name: pokemon_by_name[:name], base_experience: pokemon_by_name[:base_experience],
+      weight: pokemon_by_name[:weight], stats_attributes: pokemon_by_name[:stats],
+      types_attributes: pokemon_by_name[:types]
+    }
   end
 end
