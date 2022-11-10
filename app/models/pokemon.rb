@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Pokemon < ApplicationRecord
   has_many :stats, dependent: :destroy
   has_many :types, dependent: :destroy

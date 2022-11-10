@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 require 'HTTParty'
+# fetch pokemons Api
 class PokemonNetworkRequest
   include HTTParty
   base_uri 'https://pokeapi.co/api/v2/pokemon'
@@ -9,7 +12,7 @@ class PokemonNetworkRequest
   end
 
   def get_all
-    res = self.class.get("/")
+    res = self.class.get('/')
     res['results']
   end
 
@@ -17,10 +20,10 @@ class PokemonNetworkRequest
     res = self.class.get("/#{name}")
     {
       name: name,
-      types: res["types"],
-      stats: res["stats"],
-      base_experience: res["base_experience"],
-      weight: res["weight"]
+      types: res['types'],
+      stats: res['stats'],
+      base_experience: res['base_experience'],
+      weight: res['weight']
     }
   end
 end
