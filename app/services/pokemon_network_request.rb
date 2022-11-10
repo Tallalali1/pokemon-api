@@ -11,12 +11,7 @@ class PokemonNetworkRequest
     @name = name
   end
 
-  def get_all
-    res = self.class.get('/')
-    res['results']
-  end
-
-  def get_pokemon_by_name
+  def fetch_pokemon_by_name
     res = self.class.get("/#{name}")
     {
       name: name,
