@@ -8,10 +8,9 @@ class Stat < ApplicationRecord
   validate :format_of_stat_hash
 
   def format_of_stat_hash
-    unless stat.is_a?(Hash)
-      errors.add(:stat, "is not a hash")
-      return
-    end
-  end
+    return if stat.is_a?(Hash)
 
+    errors.add(:stat, 'is not a hash')
+    nil
+  end
 end

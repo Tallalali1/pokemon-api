@@ -8,9 +8,9 @@ class Type < ApplicationRecord
   validate :format_of_type_hash
 
   def format_of_type_hash
-    unless type.is_a?(Hash)
-      errors.add(:type, "is not a hash")
-      return
-    end
+    return if type.is_a?(Hash)
+
+    errors.add(:type, 'is not a hash')
+    nil
   end
 end
