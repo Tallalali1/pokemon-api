@@ -4,14 +4,13 @@
 class PokemonsController < ApplicationController
   before_action :set_pokemon, only: %i[show destroy]
   def index
-    pokemons = Pokemon.all
-    render json: pokemons, except: %i[created_at updated_at], include: %i[types stats]
+    render json: Pokemon.includes(:stats, :types), status: :ok
   end
 
   def show
     create_pokemon(params[:id]) unless @pokemon
     create_pokemon(params[:id]) unless @pokemon.name == params[:id]
-    render json: @pokemon, except: %i[created_at updated_at], include: %i[types stats]
+    render json: @pokemon, status: :ok
   end
 
   def destroy
